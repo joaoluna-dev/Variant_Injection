@@ -39,6 +39,11 @@ bcftools index variantes.vcf.gz
 bcftools concat -a "$vcf_alvo_zip" variantes.vcf.gz -O z --remove-duplicates -o "${base}_injected.vcf.gz"
 bcftools sort "${base}_injected.vcf.gz" -O z -o "${base}_injected_sorted.vcf.gz"
 
+#removendo arquivos temporários
+rm *.csi
+rm variantes.*
+rm "${base}_injected.vcf.gz"
+
 
 
 
