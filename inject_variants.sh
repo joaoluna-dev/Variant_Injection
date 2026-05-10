@@ -16,6 +16,7 @@ echo "Header escrito em arquivo de variantes in silico."
 #escrevendo as variantes presentes no arquivo de referência no novo vcf
 if [[ -s "$arquivo_variantes" ]]; then
     cat "$arquivo_variantes" >> variantes.vcf
+    bcftools sort variantes.vcf -o variantes_sorted.vcf
     echo "Variantes escritas com sucesso."
 else
     echo "Arquivo de variantes está vazio ou não existe."
@@ -26,17 +27,17 @@ base="${vcf_alvo%.vcf.gz}"
 base="${base%.vcf}"
 
 #compactando
-bgzip variantes.vcf
+bgzip variantes_sorted.vcf
 bgzip "$vcf_alvo"
 vcf_alvo_zip="${vcf_alvo}.gz"
 echo "Variantes compactadas com sucesso."
 
 #indexando arquivos
 bcftools index "$vcf_alvo_zip"
-bcftools index variantes.vcf.gz
+bcftools index variantes_sorted.vcf.gz
 
 #concatenando os arquivos para mesclar as variantes
-bcftools concat -a "$vcf_alvo_zip" variantes.vcf.gz -O z --remove-duplicates -o "${base}_injected.vcf.gz"
+bcftools concat -a "$vcf_alvo_zip" variantes_sorted.vcf.gz -O z --remove-duplicates -o "${base}_injected.vcf.gz"
 bcftools sort "${base}_injected.vcf.gz" -O z -o "${base}_injected_sorted.vcf.gz"
 
 #removendo arquivos temporários
